@@ -1,3 +1,4 @@
+import 'package:ecommerce/Utils/app_routes.dart';
 import 'package:ecommerce/View_Models/home_cubit/home_cubit.dart';
 import 'package:ecommerce/Views/Widgets/product_item.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,13 @@ class HomeTabview extends StatelessWidget {
       bloc: BlocProvider.of<HomeCubit>(context),
       builder: (context, state) {
         if (state is HomeLoading) {
-          return Center(child: CircularProgressIndicator.adaptive());
+          return Center(
+            child: CircularProgressIndicator.adaptive(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                Theme.of(context).primaryColor,
+              ),
+            ),
+          );
         } else if (state is HomeLoaded) {
           return SingleChildScrollView(
             child: Column(
@@ -69,7 +76,14 @@ class HomeTabview extends StatelessWidget {
                     childAspectRatio: 0.60,
                   ),
                   itemBuilder: (context, index) {
-                    return ProductItem(productItem: state.products[index]);
+                    return InkWell(
+                      onTap: () =>
+                          Navigator.of(context, rootNavigator: true).pushNamed(
+                            AppRoutes.productItemRoute,
+                            arguments: state.products[index].id,
+                          ),
+                      child: ProductItem(productItem: state.products[index]),
+                    );
                   },
                 ),
               ],

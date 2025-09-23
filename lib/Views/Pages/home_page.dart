@@ -32,15 +32,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       );
     }
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(15, 69, 15, 5),
-      child: BlocProvider(
-        create: (context) {
-          final cubit = HomeCubit();
-          cubit.getHomeData();
-          return cubit;
-        },
+    return BlocProvider(
+      create: (context) {
+        final cubit = HomeCubit();
+        cubit.getHomeData();
+        return cubit;
+      },
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(15, 69, 15, 5),
         child: Scaffold(
+          backgroundColor: Colors.white,
           body: Column(
             children: [
               Row(
