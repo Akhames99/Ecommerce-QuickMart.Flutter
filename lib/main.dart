@@ -1,15 +1,17 @@
 import 'package:ecommerce/Utils/app_router.dart';
-import 'package:ecommerce/Views/Pages/custom_bottom_navbar.dart';
+import 'package:ecommerce/Utils/app_routes.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Firebase.initializeApp();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
         primaryColor: Color(0xFF005A32),
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: CustomBottomNavbar(),
+      initialRoute: AppRoutes.homeRoute,
       onGenerateRoute: AppRouter.onGenerateRoute,
     );
   }

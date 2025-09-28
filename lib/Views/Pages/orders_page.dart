@@ -1,3 +1,4 @@
+import 'package:ecommerce/Utils/app_routes.dart';
 import 'package:ecommerce/View_Models/cart_cubit/cart_cubit.dart';
 import 'package:ecommerce/Views/Widgets/cart_item_widget.dart';
 import 'package:ecommerce/Views/Widgets/total_and_subtotal_widget.dart';
@@ -114,7 +115,12 @@ class OrdersPage extends StatelessWidget {
                                   backgroundColor: Color(0XFF41AB5D),
                                   foregroundColor: Color(0XFFEDF8E9),
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.of(
+                                    context,
+                                    rootNavigator: true,
+                                  ).pushNamed(AppRoutes.checkOutRoute);
+                                },
                                 child: Text(
                                   'CheckOut',
                                   style: TextStyle(fontSize: 20),
