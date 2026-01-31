@@ -23,6 +23,7 @@ class CheckOutPage extends StatelessWidget {
       CheckoutCubit checkoutCubit,
       BuildContext context,
     ) {
+      final checkoutCubit = BlocProvider.of<CheckoutCubit>(context);
       if (chosenCard != null) {
         return PaymentMethodItem(
           paymentCard: chosenCard,
@@ -43,8 +44,8 @@ class CheckOutPage extends StatelessWidget {
                   ),
                 );
               },
-            ).then((value) {
-              checkoutCubit.getCartItems();
+            ).then((value) async {
+              await checkoutCubit.getCheckoutContent();
             });
           },
         );
@@ -79,11 +80,14 @@ class CheckOutPage extends StatelessWidget {
       if (chosenLocation != null) {
         return Row(
           children: [
-            Image.asset(
-              chosenLocation.locationImg,
-              width: 140,
-              height: 100,
-              fit: BoxFit.cover,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.asset(
+                chosenLocation.locationImg,
+                width: 140,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
             ),
             SizedBox(width: 16),
             Column(
@@ -125,12 +129,17 @@ class CheckOutPage extends StatelessWidget {
       }
     }
 
-    return BlocProvider(
-      create: (context) {
-        final cubit = CheckoutCubit();
-        cubit.getCartItems();
-        return cubit;
-      },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) {
+            final cubit = CheckoutCubit();
+            cubit.getCheckoutContent();
+            return cubit;
+          },
+        ),
+        BlocProvider(create: (context) => PaymentMethodsCubit()),
+      ],
       child: Scaffold(
         appBar: AppBar(
           title: Row(
@@ -176,13 +185,15 @@ class CheckOutPage extends StatelessWidget {
                                 Navigator.of(context)
                                     .pushNamed(AppRoutes.chooseLocationRoute)
                                     .then(
-                                      (onValue) => checkoutCubit.getCartItems(),
+                                      (onValue) async => await checkoutCubit
+                                          .getCheckoutContent(),
                                     );
                               },
                             ),
                             const SizedBox(height: 10),
                             _buildShippingItem(chosenLocation, context),
                             const SizedBox(height: 10),
+                            Divider(color: Theme.of(context).primaryColor),
                             CheckoutHeadlines(
                               title: 'NumberOfProducts',
                               numberOfItems: state.numOfProducts,
@@ -219,7 +230,7 @@ class CheckOutPage extends StatelessWidget {
                                             ),
                                             height: 85,
                                             width: 85,
-                                            child: Image.asset(
+                                            child: Image.network(
                                               cartItem.product.imgPath,
                                             ),
                                           ),
@@ -247,6 +258,27 @@ class CheckOutPage extends StatelessWidget {
                                                   children: [
                                                     TextSpan(
                                                       text: cartItem.size.name,
+                                                      style: TextStyle(
+                                                        fontSize: 20,
+                                                        color: Theme.of(
+                                                          context,
+                                                        ).primaryColor,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Text.rich(
+                                                TextSpan(
+                                                  text: 'Quantity: ',
+                                                  style: const TextStyle(
+                                                    fontSize: 20,
+                                                    color: Color(0XFF41AB5D),
+                                                  ),
+                                                  children: [
+                                                    TextSpan(
+                                                      text: cartItem.quantity
+                                                          .toString(),
                                                       style: TextStyle(
                                                         fontSize: 20,
                                                         color: Theme.of(
@@ -289,14 +321,20 @@ class CheckOutPage extends StatelessWidget {
                                 );
                               },
                             ),
+                            Divider(color: Theme.of(context).primaryColor),
                             CheckoutHeadlines(title: 'Payment'),
                             const SizedBox(height: 10),
                             InkWell(
                               onTap: () {
                                 Navigator.of(context)
-                                    .pushNamed(AppRoutes.addNewCardRoute)
+                                    .pushNamed(
+                                      AppRoutes.addNewCardRoute,
+                                      arguments:
+                                          PaymentMethodsCubit(), // Pass the cubit as argument
+                                    )
                                     .then(
-                                      (value) => checkoutCubit.getCartItems(),
+                                      (value) async => await checkoutCubit
+                                          .getCheckoutContent(),
                                     );
                               },
                               child: _buildPaymentMethodItem(

@@ -12,6 +12,10 @@ class HomeTabview extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
       bloc: BlocProvider.of<HomeCubit>(context),
+      buildWhen: (previous, current) =>
+          current is HomeLoading ||
+          current is HomeLoaded ||
+          current is HomeError,
       builder: (context, state) {
         if (state is HomeLoading) {
           return Center(
@@ -77,11 +81,15 @@ class HomeTabview extends StatelessWidget {
                   ),
                   itemBuilder: (context, index) {
                     return InkWell(
-                      onTap: () =>
-                          Navigator.of(context, rootNavigator: true).pushNamed(
-                            AppRoutes.productItemRoute,
-                            arguments: state.products[index].id,
-                          ),
+                      onTap: () {
+                        print('Product clicked: ${state.products[index].name}');
+                        print('Product ID: ${state.products[index].id}');
+                        Navigator.of(context, rootNavigator: true).pushNamed(
+                          AppRoutes.productItemRoute,
+                          arguments: state
+                              .products[index], // Pass whole product object
+                        );
+                      },
                       child: ProductItem(productItem: state.products[index]),
                     );
                   },

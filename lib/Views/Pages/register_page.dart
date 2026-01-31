@@ -1,7 +1,10 @@
+import 'package:ecommerce/Utils/app_colors.dart';
 import 'package:ecommerce/Utils/app_routes.dart';
+import 'package:ecommerce/View_Models/auth_cubit/auth_cubit.dart';
 import 'package:ecommerce/Views/Widgets/label_with_textfield.dart';
 import 'package:ecommerce/Views/Widgets/social_media_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -17,6 +20,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    final cubit = BlocProvider.of<AuthCubit>(context);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -59,20 +63,59 @@ class _RegisterPageState extends State<RegisterPage> {
                   SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        foregroundColor: Color(0XFFEDF8E9),
-                      ),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
+                    child: BlocConsumer<AuthCubit, AuthState>(
+                      bloc: cubit,
+                      listenWhen: (previous, current) =>
+                          current is AuthDone || current is AuthError,
+                      listener: (context, state) {
+                        if (state is AuthDone) {
                           Navigator.of(context).pushNamed(AppRoutes.homeRoute);
+                        } else if (state is AuthError) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(state.errorMessage)),
+                          );
                         }
                       },
-                      child: Text(
-                        'Create Account',
-                        style: TextStyle(fontSize: 20),
-                      ),
+                      buildWhen: (previous, current) =>
+                          current is AuthDone ||
+                          current is AuthLoading ||
+                          current is AuthError,
+                      builder: (context, state) {
+                        if (state is AuthLoading) {
+                          return ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).primaryColor,
+                            ),
+                            onPressed: () {},
+                            child: Center(
+                              child: CircularProgressIndicator.adaptive(
+                                valueColor: AlwaysStoppedAnimation(
+                                  AppColors.bgcolor,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        return ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            foregroundColor: Color(0XFFEDF8E9),
+                          ),
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              await cubit.registerWithEmailAndPassword(
+                                emailController.text,
+                                passwordController.text,
+                                userController.text,
+                              );
+                            }
+                          },
+                          child: Text(
+                            'Create Account',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   Align(

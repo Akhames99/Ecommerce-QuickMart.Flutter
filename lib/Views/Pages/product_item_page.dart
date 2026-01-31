@@ -6,7 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductItemPage extends StatelessWidget {
   final String productId;
-  const ProductItemPage({super.key, required this.productId});
+  final ProductItemModel? product; // Add this parameter
+
+  const ProductItemPage({
+    super.key,
+    required this.productId,
+    this.product, // Make it optional
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -51,9 +57,12 @@ class ProductItemPage extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            IconNavbar(
-                              'assets/icons/chevronLeft.png',
-                              Theme.of(context).primaryColor,
+                            InkWell(
+                              onTap: () => Navigator.of(context).pop(),
+                              child: IconNavbar(
+                                'assets/icons/chevronLeft.png',
+                                Theme.of(context).primaryColor,
+                              ),
                             ),
                             IconNavbar(
                               'assets/icons/favoriteO_P.png',
@@ -61,7 +70,25 @@ class ProductItemPage extends StatelessWidget {
                             ),
                           ],
                         ),
-                        Image.asset(productItem.imgPath),
+                        Image.network(
+                          productItem.imgPath,
+                          fit: BoxFit.contain,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator.adaptive(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Center(
+                              child: Icon(Icons.error, color: Colors.red),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -83,155 +110,170 @@ class ProductItemPage extends StatelessWidget {
                           right: 28,
                           top: 30,
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      productItem.name,
-                                      style: TextStyle(
-                                        fontSize: 32,
-                                        color: Color(0XFFEDF8E9),
-                                      ),
-                                    ),
-                                    Row(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Image.asset(
-                                          'assets/icons/star.png',
-                                          height: 25,
-                                          width: 25,
-                                        ),
-                                        SizedBox(width: 10),
                                         Text(
-                                          productItem.average_rate,
+                                          productItem.name,
                                           style: TextStyle(
-                                            fontSize: 24,
+                                            fontSize: 32,
                                             color: Color(0XFFEDF8E9),
                                           ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Image.asset(
+                                              'assets/icons/star.png',
+                                              height: 25,
+                                              width: 25,
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              productItem.average_rate,
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                color: Color(0XFFEDF8E9),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
-                                BlocBuilder<ProductItemCubit, ProductItemState>(
-                                  bloc: cubit,
-                                  buildWhen: (previous, current) =>
-                                      current is CounterQuantityLoaded ||
-                                      current is ProductItemLoaded,
-                                  builder: (context, state) {
-                                    if (state is CounterQuantityLoaded) {
-                                      return CounterWidget(
-                                        value: state.value,
-                                        productId: productItem.id,
-                                        cubit: cubit,
-                                      );
-                                    } else if (state is ProductItemLoaded) {
-                                      return CounterWidget(
-                                        value: 1,
-                                        productId: productItem.id,
-                                        cubit: cubit,
-                                      );
-                                    } else {
-                                      return const SizedBox.shrink();
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Size',
-                                  style: TextStyle(
-                                    fontSize: 32,
-                                    color: Color(0XFFEDF8E9),
                                   ),
-                                ),
-                                BlocBuilder<ProductItemCubit, ProductItemState>(
-                                  bloc: cubit,
-                                  buildWhen: (previous, current) =>
-                                      current is sizeSelected ||
-                                      current is ProductItemLoaded,
-                                  builder: (context, state) {
-                                    return Row(
-                                      children: productSize.values
-                                          .map(
-                                            (size) => Padding(
-                                              padding: const EdgeInsets.only(
-                                                left: 20,
-                                              ),
-                                              child: InkWell(
-                                                onTap: () =>
-                                                    cubit.selectSize(size),
-                                                child: SizedBox(
-                                                  height: 40,
-                                                  width: 40,
-                                                  child: DecoratedBox(
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      color:
-                                                          state is sizeSelected &&
-                                                              state.size == size
-                                                          ? Color(0XFF41AB5D)
-                                                          : Color(0XFFEDF8E9),
-                                                    ),
-                                                    child: Align(
-                                                      alignment:
-                                                          Alignment.center,
-                                                      child: Text(
-                                                        size.name,
-                                                        style: TextStyle(
-                                                          fontSize: 17,
-                                                          color:
-                                                              state
-                                                                      is sizeSelected &&
-                                                                  state.size ==
-                                                                      size
-                                                              ? Color(
-                                                                  0XFFEDF8E9,
-                                                                )
-                                                              : Theme.of(
-                                                                  context,
-                                                                ).primaryColor,
+                                  BlocBuilder<
+                                    ProductItemCubit,
+                                    ProductItemState
+                                  >(
+                                    bloc: cubit,
+                                    buildWhen: (previous, current) =>
+                                        current is CounterQuantityLoaded ||
+                                        current is ProductItemLoaded,
+                                    builder: (context, state) {
+                                      if (state is CounterQuantityLoaded) {
+                                        return CounterWidget(
+                                          value: state.value,
+                                          productId: productItem.id,
+                                          cubit: cubit,
+                                        );
+                                      } else if (state is ProductItemLoaded) {
+                                        return CounterWidget(
+                                          value: 1,
+                                          productId: productItem.id,
+                                          cubit: cubit,
+                                        );
+                                      } else {
+                                        return const SizedBox.shrink();
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Size',
+                                    style: TextStyle(
+                                      fontSize: 32,
+                                      color: Color(0XFFEDF8E9),
+                                    ),
+                                  ),
+                                  BlocBuilder<
+                                    ProductItemCubit,
+                                    ProductItemState
+                                  >(
+                                    bloc: cubit,
+                                    buildWhen: (previous, current) =>
+                                        current is SizeSelected ||
+                                        current is ProductItemLoaded,
+                                    builder: (context, state) {
+                                      return Row(
+                                        children: productSize.values
+                                            .map(
+                                              (size) => Padding(
+                                                padding: const EdgeInsets.only(
+                                                  left: 20,
+                                                ),
+                                                child: InkWell(
+                                                  onTap: () =>
+                                                      cubit.selectSize(size),
+                                                  child: SizedBox(
+                                                    height: 40,
+                                                    width: 40,
+                                                    child: DecoratedBox(
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color:
+                                                            state is SizeSelected &&
+                                                                state.size == size
+                                                            ? Color(0XFF41AB5D)
+                                                            : Color(0XFFEDF8E9),
+                                                      ),
+                                                      child: Align(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: Text(
+                                                          size.name,
+                                                          style: TextStyle(
+                                                            fontSize: 17,
+                                                            color:
+                                                                state
+                                                                        is SizeSelected &&
+                                                                    state.size ==
+                                                                        size
+                                                                ? Color(
+                                                                    0XFFEDF8E9,
+                                                                  )
+                                                                : Theme.of(
+                                                                    context,
+                                                                  ).primaryColor,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          )
-                                          .toList(),
-                                    );
-                                  },
+                                            )
+                                            .toList(),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                              Text(
+                                'Description',
+                                style: TextStyle(
+                                  fontSize: 32,
+                                  color: Color(0xFFEDF8E9),
                                 ),
-                              ],
-                            ),
-                            SizedBox(height: 20),
-                            Text(
-                              'Description',
-                              style: TextStyle(
-                                fontSize: 32,
-                                color: Color(0xFFEDF8E9),
                               ),
-                            ),
-                            Text(
-                              'LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: Color(0xFFEDF8E9),
+                              Text(
+                                'LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Color(0xFFEDF8E9),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -361,8 +403,32 @@ class ProductItemPage extends StatelessWidget {
               ),
             ),
           );
+        } else if (state is ProductItemError) {
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error, color: Colors.red, size: 50),
+                  SizedBox(height: 20),
+                  Text('Error loading product', style: TextStyle(fontSize: 18)),
+                  SizedBox(height: 10),
+                  Text(
+                    state.message,
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('Go Back'),
+                  ),
+                ],
+              ),
+            ),
+          );
         } else {
-          return Scaffold();
+          return Scaffold(body: Center(child: Text('Unexpected state')));
         }
       },
     );

@@ -21,6 +21,7 @@ class _AddNewCardPageState extends State<AddNewCardPage> {
     final cubit = BlocProvider.of<PaymentMethodsCubit>(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Row(
           children: [

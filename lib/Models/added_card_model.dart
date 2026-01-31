@@ -6,7 +6,7 @@ class AddedCardModel {
   final String cvvCode;
   final bool isChosen;
 
-  AddedCardModel({
+  const AddedCardModel({
     required this.id,
     required this.cardNumber,
     required this.cardHolder,
@@ -30,6 +30,28 @@ class AddedCardModel {
       expiryDate: expiryDate ?? this.expiryDate,
       cvvCode: cvvCode ?? this.cvvCode,
       isChosen: isChosen ?? this.isChosen,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'cardNumber': cardNumber,
+      'cardHolder': cardHolder,
+      'expiryDate': expiryDate,
+      'cvvCode': cvvCode,
+      'isChosen': isChosen,
+    };
+  }
+
+  factory AddedCardModel.fromMap(Map<String, dynamic> map) {
+    return AddedCardModel(
+      id: map['id'] as String,
+      cardNumber: map['cardNumber'] as String,
+      cardHolder: map['cardHolder'] as String,
+      expiryDate: map['expiryDate'] as String,
+      cvvCode: map['cvvCode'] as String,
+      isChosen: map['isChosen'] as bool,
     );
   }
 }

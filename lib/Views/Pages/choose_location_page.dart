@@ -1,4 +1,3 @@
-import 'package:ecommerce/Models/location_item_model.dart';
 import 'package:ecommerce/View_Models/choose_location_cubit/choose_location_cubit.dart';
 import 'package:ecommerce/Views/Widgets/location_item_widget.dart';
 import 'package:flutter/material.dart';
@@ -146,9 +145,7 @@ class _ChooseLocationPageState extends State<ChooseLocationPage> {
                     } else if (state is FetchedLocations ||
                         state is LocationChosen) {
                       // Get locations from either FetchedLocations or from cubit directly
-                      final locationInformation = state is FetchedLocations
-                          ? state.locations
-                          : locations; // Use the global locations list
+                      final locationInformation = cubit.locations;
 
                       return ListView.builder(
                         shrinkWrap: true,
@@ -169,7 +166,7 @@ class _ChooseLocationPageState extends State<ChooseLocationPage> {
                                   : Theme.of(context).primaryColor,
                               borderWidth: isSelected ? 3.0 : 1.0,
                               onTap: () {
-                                cubit.selectLocation(location.id);
+                                cubit.selectLocation(location);
                               },
                               location: location,
                             ),

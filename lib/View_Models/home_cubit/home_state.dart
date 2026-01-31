@@ -1,20 +1,40 @@
 part of 'home_cubit.dart';
 
-sealed class HomeState {}
+abstract class HomeState {}
 
-final class HomeInitial extends HomeState {}
+class HomeInitial extends HomeState {}
 
-final class HomeLoading extends HomeState {}
+class HomeLoading extends HomeState {}
 
-final class HomeLoaded extends HomeState {
-  List<HomeCarouselItemModel> carouselItems;
-  List<ProductItemModel> products;
+class HomeLoaded extends HomeState {
+  final List<HomeCarouselItemModel> carouselItems;
+  final List<ProductItemModel> products;
 
   HomeLoaded({required this.carouselItems, required this.products});
 }
 
-final class HomeError extends HomeState {
+class HomeError extends HomeState {
   final String errorMessage;
 
   HomeError({required this.errorMessage});
+}
+
+class SetFavoriteLoading extends HomeState {
+  final String productId;
+
+  SetFavoriteLoading({required this.productId});
+}
+
+class SetFavoriteSuccess extends HomeState {
+  final String productId;
+  final bool isFavorite;
+
+  SetFavoriteSuccess({required this.productId, required this.isFavorite});
+}
+
+class SetFavoriteError extends HomeState {
+  final String productId;
+  final String errorMessage;
+
+  SetFavoriteError({required this.productId, required this.errorMessage});
 }

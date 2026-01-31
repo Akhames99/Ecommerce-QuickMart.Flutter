@@ -1,4 +1,6 @@
 import 'package:ecommerce/Models/added_card_model.dart';
+import 'package:ecommerce/Services/auth_services.dart';
+import 'package:ecommerce/Services/checkout_services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'payment_methods_state.dart';
@@ -6,75 +8,88 @@ part 'payment_methods_state.dart';
 class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
   PaymentMethodsCubit() : super(PaymentMethodsInitial());
 
-  String selectedPaymentId = cards.first.id;
+  String? selectedPaymentId;
+  final checkOutServices = CheckoutServicesImpl();
+  final authServices = AuthServicesImpl();
 
-  void addNewCard(
+  Future<void> addNewCard(
     String cardNumber,
     String cardHolder,
     String expiryDate,
     String cvvCode,
-  ) {
+  ) async {
     emit(NewCardLoading());
-    final newCard = AddedCardModel(
-      id: DateTime.now().toIso8601String(),
-      cardNumber: cardNumber,
-      cardHolder: cardHolder,
-      expiryDate: expiryDate,
-      cvvCode: cvvCode,
-    );
-    Future.delayed(Duration(seconds: 1), () {
-      cards.add(newCard);
+    try {
+      final newCard = AddedCardModel(
+        id: DateTime.now().toIso8601String(),
+        cardNumber: cardNumber,
+        cardHolder: cardHolder,
+        expiryDate: expiryDate,
+        cvvCode: cvvCode,
+      );
+      final currentUser = authServices.currentUser();
+      await checkOutServices.setCard(currentUser!.uid, newCard);
       emit(NewCardLoaded());
-    });
+    } catch (e) {
+      emit(NewCardError(message: e.toString()));
+    }
   }
 
-  void fetchPaymentMethods() {
+  Future<void> fetchPaymentMethods() async {
     emit(FetchingPaymentMethods());
-    Future.delayed(Duration(seconds: 1), () {
-      if (cards.isNotEmpty) {
-        final paymentMethodChosen = cards.firstWhere(
-          (element) => element.isChosen == true,
-          orElse: () => cards.first,
+    try {
+      final currentUser = authServices.currentUser();
+      final paymentCards = await checkOutServices.fetchPaymentMethods(
+        currentUser!.uid,
+      );
+      emit(FetchedPaymentMethods(paymentCards: paymentCards));
+      if (paymentCards.isNotEmpty) {
+        final paymentMethodChosen = paymentCards.firstWhere(
+          (card) => card.isChosen,
+          orElse: () => paymentCards.first,
         );
-        emit(FetchedPaymentMethods(paymentCards: cards));
-        Future.delayed(Duration(milliseconds: 100), () {
-          emit(PaymentMethodChosen(paymentMethodChosen));
-        });
-      } else {
-        emit(FetchingPaymentMethodsError(message: 'No Payment Methods Found'));
+        selectedPaymentId = paymentMethodChosen.id;
+        emit(PaymentMethodChosen(paymentMethodChosen));
       }
-    });
+    } catch (e) {
+      emit(FetchingPaymentMethodsError(message: e.toString()));
+    }
   }
 
-  void changePaymentMethod(String id) {
-    selectedPaymentId = id;
-    var tempChosenPaymentMethod = cards.firstWhere(
-      (item) => item.id == selectedPaymentId,
-    );
-    emit(PaymentMethodChosen(tempChosenPaymentMethod));
+  Future<void> changePaymentMethod(String id) async {
+    try {
+      selectedPaymentId = id;
+      final tempChosenPaymentMethod = await checkOutServices
+          .fetchSinglePaymentMethods(
+            authServices.currentUser()!.uid,
+            selectedPaymentId!,
+          );
+      emit(PaymentMethodChosen(tempChosenPaymentMethod));
+    } catch (e) {
+      emit(FetchingPaymentMethodsError(message: e.toString()));
+    }
   }
 
-  void confirmPaymentMethod() {
+  Future<void> confirmPaymentMethod() async {
     emit(ConfirmPaymentLoading());
-    Future.delayed(Duration(seconds: 1), () {
-      var chosenPaymentMethod = cards.firstWhere(
-        (item) => item.id == selectedPaymentId,
-      );
-      var previousPaymentMethod = cards.firstWhere(
-        (paymentCard) => paymentCard.isChosen == true,
-        orElse: () => cards.first,
-      );
-      previousPaymentMethod = previousPaymentMethod.copyWith(isChosen: false);
+    try {
+      final currentUser = authServices.currentUser();
+      final previousChosenPaymentMethod =
+          (await checkOutServices.fetchPaymentMethods(
+            currentUser!.uid,
+            true,
+          )).first.copyWith(isChosen: false);
+      var chosenPaymentMethod = await checkOutServices
+          .fetchSinglePaymentMethods(currentUser.uid, selectedPaymentId!);
       chosenPaymentMethod = chosenPaymentMethod.copyWith(isChosen: true);
-      final previousIndex = cards.indexWhere(
-        (paymentCard) => paymentCard.id == previousPaymentMethod.id,
+      await checkOutServices.setCard(
+        currentUser.uid,
+        previousChosenPaymentMethod,
       );
-      final chosenIndex = cards.indexWhere(
-        (paymentCard) => paymentCard.id == chosenPaymentMethod.id,
-      );
-      cards[previousIndex] = previousPaymentMethod;
-      cards[chosenIndex] = chosenPaymentMethod;
+      await checkOutServices.setCard(currentUser.uid, chosenPaymentMethod);
       emit(ConfirmPaymentSuccess());
-    });
+    } catch (e) {
+      emit(FetchingPaymentMethodsError(message: e.toString()));
+    }
   }
 }

@@ -22,8 +22,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    Widget IconNavbar(String path) {
+    Widget iconNavbar(String path) {
       return Image.asset(
         path,
         height: 30,
@@ -32,76 +38,79 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       );
     }
 
-    return BlocProvider(
-      create: (context) {
-        final cubit = HomeCubit();
-        cubit.getHomeData();
-        return cubit;
-      },
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(15, 69, 15, 5),
-        child: Scaffold(
+    return BlocProvider<HomeCubit>(
+      create: (context) => HomeCubit()..getHomeData(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
-          body: Column(
+          elevation: 0,
+          toolbarHeight: 80,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        foregroundImage: AssetImage('assets/images/salah.jpg'),
-                        radius: 30,
-                      ),
-                      SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Hi, Salah',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Color(0xFF005A32),
-                            ),
-                          ),
-                          Text(
-                            'What Will You Buy Today!',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Color(0xFF41AB5D),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                  CircleAvatar(
+                    foregroundImage: AssetImage(
+                      'assets/images/profileIcon.jpg',
+                    ),
+                    radius: 28,
                   ),
-                  Row(
+                  SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      IconNavbar('assets/icons/search.png'),
-                      SizedBox(width: 10),
-                      IconNavbar('assets/icons/notification.png'),
+                      Text(
+                        'Hi, Ahmed',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Color(0xFF005A32),
+                        ),
+                      ),
+                      Text(
+                        'What Will You Buy Today!',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF41AB5D),
+                        ),
+                      ),
                     ],
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              Row(
+                children: [
+                  iconNavbar('assets/icons/search.png'),
+                  SizedBox(width: 10),
+                  iconNavbar('assets/icons/notification.png'),
+                ],
+              ),
+            ],
+          ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.fromLTRB(15, 0, 15, 5),
+          child: Column(
+            children: [
               TabBar(
                 dividerColor: Colors.white,
                 labelColor: AppColors.primarycolor,
                 labelStyle: Theme.of(context).textTheme.titleLarge,
                 indicatorColor: AppColors.primarycolor,
                 unselectedLabelColor: AppColors.primarycolor.withOpacity(0.15),
-                tabs: [
+                controller: _tabController,
+                tabs: const [
                   Tab(text: 'Home'),
                   Tab(text: 'Category'),
                 ],
-                controller: _tabController,
               ),
               SizedBox(height: 10),
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
-                  children: [HomeTabview(), CategoryTabview()],
+                  children: const [HomeTabview(), CategoryTabview()],
                 ),
               ),
             ],

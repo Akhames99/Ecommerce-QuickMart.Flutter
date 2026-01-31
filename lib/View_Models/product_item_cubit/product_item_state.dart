@@ -12,10 +12,10 @@ final class ProductItemLoaded extends ProductItemState {
   ProductItemLoaded({required this.product});
 }
 
-final class sizeSelected extends ProductItemState {
+final class SizeSelected extends ProductItemState {
   final productSize size;
 
-  sizeSelected({required this.size});
+  SizeSelected({required this.size});
 }
 
 final class CounterQuantityLoaded extends ProductItemState {
@@ -31,6 +31,12 @@ final class ProductAddedToCart extends ProductItemState {
 }
 
 final class ProductAddingToCart extends ProductItemState {}
+
+final class ProductAddToCartError extends ProductItemState {
+  final String errorMessage;
+
+  ProductAddToCartError({required this.errorMessage});
+}
 
 final class ProductItemError extends ProductItemState {
   final String message;

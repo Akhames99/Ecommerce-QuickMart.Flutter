@@ -1,16 +1,21 @@
+import 'package:ecommerce/Utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class SocialMediaButton extends StatelessWidget {
-  final String text;
-  final String iconPath;
-  final VoidCallback onTap;
+  final String? text;
+  final String? iconPath;
+  final VoidCallback? onTap;
+  final bool isLoading;
 
-  const SocialMediaButton({
+  SocialMediaButton({
     super.key,
-    required this.text,
-    required this.iconPath,
-    required this.onTap,
-  });
+    this.text,
+    this.iconPath,
+    this.onTap,
+    this.isLoading = false,
+  }) {
+    assert((text != null && iconPath != null) || isLoading == true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +32,23 @@ class SocialMediaButton extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconNavbar(iconPath),
-              SizedBox(width: 10),
-              Text(
-                text,
-                style: TextStyle(color: Theme.of(context).primaryColor),
-              ),
-            ],
-          ),
+          child: isLoading
+              ? Center(
+                  child: const CircularProgressIndicator.adaptive(
+                    valueColor: AlwaysStoppedAnimation(AppColors.bgcolor),
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconNavbar(iconPath!),
+                    SizedBox(width: 10),
+                    Text(
+                      text!,
+                      style: TextStyle(color: Theme.of(context).primaryColor),
+                    ),
+                  ],
+                ),
         ),
       ),
     );

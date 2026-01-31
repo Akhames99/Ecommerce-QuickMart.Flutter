@@ -1,26 +1,51 @@
 {
   "project_info": {
-    "project_number": "398303107991",
-    "project_id": "ecommerce-fluttercourse",
-    "storage_bucket": "ecommerce-fluttercourse.firebasestorage.app"
+    "project_number": "137546800675",
+    "project_id": "ecommerce-flutter-course-36a60",
+    "storage_bucket": "ecommerce-flutter-course-36a60.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:398303107991:android:08c464502c86322ab6c2d2",
+        "mobilesdk_app_id": "1:137546800675:android:7b2ec4250c97e624efdb96",
         "android_client_info": {
           "package_name": "com.example.ecommerce"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "137546800675-smsmml3rqkvad0fbobpnq6nc83r1gkpe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ecommerce",
+            "certificate_hash": "9a58657fbcef45e24b3956d866041b62138458a7"
+          }
+        },
+        {
+          "client_id": "137546800675-5q0fgk0mt7dmr4l37aiabftvh643c0ts.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyBdEHO3TCZnFc0iVmcvILVs7tR1XJ0TkCo"
+          "current_key": "AIzaSyAMDB8qeMLrbDp0hy91w3XdYR3bv6fUE_4"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "137546800675-5q0fgk0mt7dmr4l37aiabftvh643c0ts.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "137546800675-gbcp6qd0m05i8v60d3k93iqtlj0oudu9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ecommerce"
+              }
+            }
+          ]
         }
       }
     }

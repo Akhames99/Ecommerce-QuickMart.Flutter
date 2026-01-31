@@ -1,4 +1,6 @@
+import 'package:ecommerce/Models/product_item_model.dart';
 import 'package:ecommerce/Utils/app_routes.dart';
+import 'package:ecommerce/View_Models/auth_cubit/auth_cubit.dart';
 import 'package:ecommerce/View_Models/choose_location_cubit/choose_location_cubit.dart';
 import 'package:ecommerce/View_Models/payment_methods_cubit/Payment_methods_cubit.dart';
 import 'package:ecommerce/View_Models/product_item_cubit/product_item_cubit.dart';
@@ -18,9 +20,19 @@ class AppRouter {
       case AppRoutes.homeRoute:
         return MaterialPageRoute(builder: (_) => const CustomBottomNavbar());
       case AppRoutes.loginRoute:
-        return MaterialPageRoute(builder: (_) => const LoginPage());
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => AuthCubit(),
+            child: const LoginPage(),
+          ),
+        );
       case AppRoutes.registerRoute:
-        return MaterialPageRoute(builder: (_) => const RegisterPage());
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => AuthCubit(),
+            child: const RegisterPage(),
+          ),
+        );
       case AppRoutes.checkOutRoute:
         return MaterialPageRoute(builder: (_) => const CheckOutPage());
       case AppRoutes.chooseLocationRoute:
@@ -35,22 +47,25 @@ class AppRouter {
           ),
         );
       case AppRoutes.addNewCardRoute:
+        final paymentCubit = settings.arguments as PaymentMethodsCubit;
         return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => PaymentMethodsCubit(),
+          builder: (_) => BlocProvider.value(
+            value: paymentCubit,
             child: const AddNewCardPage(),
           ),
         );
       case AppRoutes.productItemRoute:
-        final String productId = settings.arguments as String;
+        // Now receives ProductItemModel instead of just String
+        final ProductItemModel product = settings.arguments as ProductItemModel;
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
             create: (context) {
               final cubit = ProductItemCubit();
-              cubit.getProductItem(productId);
+              // Load product directly without fetching from Firestore
+              cubit.loadProductDirectly(product);
               return cubit;
             },
-            child: ProductItemPage(productId: productId),
+            child: ProductItemPage(productId: product.id, product: product),
           ),
         );
 

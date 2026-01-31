@@ -26,7 +26,7 @@ class CartItemWidget extends StatelessWidget {
                 ),
                 height: 85,
                 width: 85,
-                child: Image.asset(cartItem.product.imgPath),
+                child: Image.network(cartItem.product.imgPath),
               ),
               const SizedBox(width: 10),
               Column(
@@ -58,11 +58,10 @@ class CartItemWidget extends StatelessWidget {
                     ),
                   ),
 
-                  /// 🔥 Listen for CartLoaded instead of CounterQuantityLoaded
+                  /// ✅ Correct BlocBuilder section
                   BlocBuilder<CartCubit, CartState>(
                     buildWhen: (previous, current) {
                       if (current is CartLoaded) {
-                        // Rebuild only if THIS item's quantity changed
                         final updatedItem = current.cartItems.firstWhere(
                           (item) => item.id == cartItem.id,
                           orElse: () => cartItem,
@@ -78,18 +77,21 @@ class CartItemWidget extends StatelessWidget {
                           orElse: () => cartItem,
                         );
 
+                        /// ✅ Return updated CounterWidget
                         return CounterWidget(
                           value: updatedItem.quantity,
-                          productId: cartItem.id,
+                          productId: updatedItem.product.id,
                           cubit: cubit,
+                          cartItem: updatedItem,
                         );
                       }
 
-                      // fallback if not loaded yet
+                      /// ✅ Return fallback CounterWidget
                       return CounterWidget(
                         value: cartItem.quantity,
-                        productId: cartItem.id,
+                        productId: cartItem.product.id,
                         cubit: cubit,
+                        cartItem: cartItem,
                       );
                     },
                   ),

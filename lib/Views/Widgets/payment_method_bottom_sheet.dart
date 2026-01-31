@@ -204,7 +204,15 @@ class _PaymentMethodBottomSheetState extends State<PaymentMethodBottomSheet> {
               ),
               InkWell(
                 onTap: () {
-                  Navigator.of(context).pushNamed(AppRoutes.addNewCardRoute);
+                  Navigator.of(context)
+                      .pushNamed(
+                        AppRoutes.addNewCardRoute,
+                        arguments: paymentMethodCubit,
+                      )
+                      .then(
+                        (value) async =>
+                            await paymentMethodCubit.fetchPaymentMethods(),
+                      );
                 },
                 child: SizedBox(
                   width: 342,
