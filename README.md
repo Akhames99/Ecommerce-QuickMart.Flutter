@@ -23,7 +23,7 @@ This was my first project implementing BLoC architecture, built to deepen my und
 
 | Login | Home | Product Detail | Checkout |
 |-------|------|-----------------|----------|
-| ![Login](assets/screenshots/login.jpg) | ![Home](assets/screenshots/home.png) | ![Product](assets/screenshots/product.png) | ![Checkout](assets/screenshots/checkout.png) |
+| ![Login](assets/screenshots/login.jpg) | ![Home](assets/screenshots/home.jpg) | ![Product](assets/screenshots/product.jpg) | ![Checkout](assets/screenshots/checkout.jpg) |
 
 ## What I Learned
 
