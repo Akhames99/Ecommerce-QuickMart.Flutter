@@ -25,6 +25,6 @@ This was my first project implementing BLoC architecture, built to deepen my und
 |-------|------|-----------------|----------|
 | ![Login](assets/screenshots/login.png) | ![Home](assets/screenshots/home.png) | ![Product](assets/screenshots/product.png) | ![Checkout](assets/screenshots/checkout.png) |
 
-## Getting Started
+## What I Learned
 
-1. Clone the repo
+Implementing BLoC for the first time taught me how to manage state across multiple screens cleanly — for example, syncing cart quantity updates between the product detail screen, cart, and checkout in real time, without tightly coupling logic to widgets.
