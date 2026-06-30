@@ -1,16 +1,30 @@
-# ecommerce
+# QuickMart 🛍️
 
-A new Flutter project.
+A full-featured e-commerce mobile app built with Flutter, using the BLoC (Business Logic Component) pattern for state management.
+
+This was my first project implementing BLoC architecture, built to deepen my understanding of separating business logic from UI in Flutter.
+
+## Features
+
+- **Authentication**: Email/password login & signup, plus Google and Facebook sign-in
+- **Home & Categories**: Browse products by category (Clothes, Shoes, Bags, Hats), promotional banners
+- **Product Details**: Size selection, quantity control, ratings, favorites
+- **Cart Management**: Real-time quantity and subtotal updates
+- **Checkout Flow**: Address selection, saved payment methods, add new card, order summary
+- **Firebase Integration**: Backend for auth and data
+
+## Tech Stack
+
+- Flutter / Dart
+- BLoC (flutter_bloc) for state management
+- Firebase (Auth, Firestore)
+
+## Screenshots
+
+| Login | Home | Product Detail | Checkout |
+|-------|------|-----------------|----------|
+| ![Login](assets/screenshots/login.png) | ![Home](assets/screenshots/home.png) | ![Product](assets/screenshots/product.png) | ![Checkout](assets/screenshots/checkout.png) |
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone the repo
