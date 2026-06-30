@@ -1,4 +1,4 @@
-# QuickMart ![AppIcon](assets/screenshots/login.jpg)
+# QuickMart ![AppIcon](assets/icons/icon.jpg)
 
 A full-featured e-commerce mobile app built with Flutter, using the BLoC (Business Logic Component) pattern for state management.
 
